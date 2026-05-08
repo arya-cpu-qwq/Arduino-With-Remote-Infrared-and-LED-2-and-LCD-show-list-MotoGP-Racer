@@ -1,78 +1,63 @@
-# Arduino MotoGP Racer List with IR Remote, LEDs, and LCD
+# Arduino MotoGP Rider List with IR Remote, LEDs, and LCD
 
-Proyek Arduino ini menampilkan daftar tim dan pembalap MotoGP pada layar LCD I2C. Pengguna dapat menavigasi daftar menggunakan remote infrared, dan LED hijau/merah menyala sebagai umpan balik saat tombol berikut atau sebelumnya ditekan.
+Proyek ini menampilkan daftar tim dan pembalap MotoGP pada layar LCD I2C, dikontrol menggunakan remote infra merah.
 
 ## Fitur
 
-- Tampil daftar tim dan pembalap MotoGP pada LCD 16x2 I2C
-- Navigasi menggunakan remote infrared
-- Tombol `1` untuk maju ke item berikutnya
-- Tombol `2` untuk kembali ke item sebelumnya
-- LED hijau menyala saat maju, LED merah menyala saat mundur
+- Memindahkan daftar pembalap dengan remote IR
+- Menampilkan tim dan nama pembalap di LCD 16x2 I2C
+- Menyalakan LED hijau untuk tombol "Next" dan LED merah untuk tombol "Previous"
+- Menggunakan Arduino Uno sebagai kontrol utama
 
-## Perangkat Keras
+## Komponen yang digunakan
 
 - Arduino Uno
-- Sensor/receiver IR di pin digital `2`
-- LED hijau di pin digital `3`
-- LED merah di pin digital `5`
-- Modul LCD I2C 16x2 dengan alamat `0x27`
-- Remote infrared yang kompatibel dengan library `IRremote`
+- Receiver IR pada pin digital 2
+- LCD 16x2 dengan modul I2C (alamat 0x27)
+- LED hijau pada pin 3
+- LED merah pada pin 5
+- Resistor 220Ω untuk setiap LED
+- Remote infra merah yang kompatibel dengan library IRremote
 
-> Sesuaikan pin LED dan alamat I2C jika konfigurasi hardware berbeda.
+## Wiring / Koneksi
 
-## Dependencies
+- IR Receiver: pin data ke `D2`
+- LED hijau: ke `D3` lewat resistor ke GND
+- LED merah: ke `D5` lewat resistor ke GND
+- LCD I2C: `SDA` ke `A4`, `SCL` ke `A5`, `VCC` ke `5V`, `GND` ke `GND`
 
-Proyek ini menggunakan PlatformIO dengan library berikut:
+> Catatan: susunan pin pada kit Wokwi atau papan lain dapat berbeda, sesuaikan dengan koneksi fisik Anda.
+
+## Library dan dependensi
+
+Project menggunakan PlatformIO dengan dependensi berikut pada `platformio.ini`:
 
 - `marcoschwartz/LiquidCrystal_I2C@^1.1.4`
 - `z3t0/IRremote@^4.7.1`
 
-## Struktur Proyek
+## Cara menggunakan
 
-- `platformio.ini` - konfigurasi PlatformIO untuk board Arduino Uno
-- `src/main.cpp` - kode utama proyek
-- `include/` - folder header tambahan jika diperlukan
-- `lib/` - folder library lokal jika diperlukan
+1. Upload program ke Arduino Uno menggunakan PlatformIO.
+2. Pastikan LCD menampilkan pesan awal:
+   - Baris 1: `Daftar MotoGP`
+   - Baris 2: `Tekan 1 atau 2`
+3. Tekan tombol `1` pada remote untuk maju ke entri berikutnya.
+4. Tekan tombol `2` pada remote untuk kembali ke entri sebelumnya.
 
-## Instalasi dan Penggunaan
+## Kode utama
 
-1. Buka proyek di PlatformIO.
-2. Pastikan file `platformio.ini` sudah berisi lingkungan `uno`:
+File utama berada di `src/main.cpp`.
 
-```ini
-[env:uno]
-platform = atmelavr
-board = uno
-framework = arduino
-lib_deps =
-    marcoschwartz/LiquidCrystal_I2C@^1.1.4
-    z3t0/IRremote@^4.7.1
-```
+- `CMD_NEXT` menggunakan nilai kode IR `0x30` untuk tombol `1`
+- `CMD_PREV` menggunakan nilai kode IR `0x18` untuk tombol `2`
+- Data tim dan nama pembalap disimpan dalam array `String`
 
-3. Sambungkan hardware sesuai pin di `src/main.cpp`.
-4. Upload kode ke Arduino.
-5. Arahkan remote IR ke receiver dan tekan `1` atau `2`.
+## Pengembangan
 
-## Penjelasan Kode
-
-- `RECV_PIN` = `2` untuk receiver IR
-- `LED_HIJAU` = `3` untuk LED maju
-- `LED_MERAH` = `5` untuk LED mundur
-- `CMD_NEXT` = `0x30` (tombol `1` pada remote)
-- `CMD_PREV` = `0x18` (tombol `2` pada remote)
-
-Saat tombol terdeteksi:
-
-- Jika `CMD_NEXT`, indeks bertambah, tampilan LCD diperbarui, dan LED hijau berkedip
-- Jika `CMD_PREV`, indeks berkurang, tampilan LCD diperbarui, dan LED merah berkedip
-
-## Catatan
-
-- Pastikan receiver IR mendapatkan daya dan terhubung dengan benar.
-- Jika LCD tidak tampil, cek alamat I2C dan kontras kabel.
-- Jika tombol remote tidak merespons, pastikan remote kompatibel dengan library `IRremote` dan gunakan tombol yang benar.
+- Tambahkan data pembalap baru pada array `tim[]` dan `pembalap[]`.
+- Ubah alamat LCD I2C jika modul Anda tidak menggunakan `0x27`.
+- Sesuaikan pin LED atau pin IR receiver jika menggunakan papan lain.
 
 ## Lisensi
 
-Proyek ini dapat digunakan dan dimodifikasi secara bebas.
+Proyek ini bersifat bebas untuk digunakan dan dimodifikasi.
